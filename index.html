@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title></title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f8ff;
+    }
+
+    .container {
+      text-align: center;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    input {
+      padding: 8px;
+      font-size: 16px;
+      width: 200px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      cursor: pointer;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      border-radius: 8px;
+    }
+
+    #weatherInfo {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Дізнайтесь погоду</h1>
+
+    <input type="text" id="cityInput" placeholder="Назва міста">
+    <button id="getWeatherBtn">Прогноз</button>
+
+    <div id="weatherInfo"></div>
+  </div>
+
+  <script>
+    document.getElementById("getWeatherBtn").addEventListener("click", () => {
+      const city = document.getElementById("cityInput").value.trim();
+      const apiKey = "172fe78b3011d9e9718d4e4b7aecd8af";
+
+      if (city === "") {
+        document.getElementById("weatherInfo").innerText = "Будь ласка, введіть назву міста.";
+        return;
+      }
+
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=ua`;
+
+      fetch(url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Помилка: ${response.status} (${response.statusText})`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          const temperature = data.main.temp;
+          const humidity = data.main.humidity;
+          const windSpeed = data.wind.speed;
+
+          document.getElementById("weatherInfo").innerHTML = `
+            <p>Місто: ${data.name}</p>
+            <p>Температура: ${temperature}°C</p>
+            <p>Вологість: ${humidity}%</p>
+            <p>Швидкість вітру: ${windSpeed} м/с</p>
+          `;
+        })
+        .catch(error => {
+          document.getElementById("weatherInfo").innerText = "Помилка: " + error.message;
+          console.error(error);
+        });
+    });
+  </script>
+</body>
+</html>
